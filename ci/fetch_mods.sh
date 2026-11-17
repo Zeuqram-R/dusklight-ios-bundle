@@ -43,6 +43,10 @@ while read -r id version _; do
     if [ -f "$REPO/patches/$id.disable-hooks.txt" ]; then
         python3 "$REPO/ci/disable_hooks.py" "$dest/lib/ios-arm64/mod.so" "$REPO/patches/$id.disable-hooks.txt"
     fi
+    # Per-mod file fix-ups (e.g. file name case, which matters on iOS but not on macOS).
+    if [ -f "$REPO/patches/$id.fixup.sh" ]; then
+        (cd "$dest" && bash "$REPO/patches/$id.fixup.sh")
+    fi
     # Keep only the iOS library; the other platforms would just bloat the app.
     find "$dest/lib" -mindepth 1 -maxdepth 1 -type d ! -name ios-arm64 -exec rm -rf {} +
     echo "$id $version: OK ($(du -sh "$dest" | cut -f1))"
