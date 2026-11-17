@@ -39,6 +39,10 @@ while read -r id version _; do
         echo "::error::$id has no iOS build (lib/ios-arm64/mod.so). Assets-only mods don't need bundling."
         exit 1
     fi
+    # Disable hooks that can't be applied on iOS (see patches/<id>.disable-hooks.txt).
+    if [ -f "$REPO/patches/$id.disable-hooks.txt" ]; then
+        python3 "$REPO/ci/disable_hooks.py" "$dest/lib/ios-arm64/mod.so" "$REPO/patches/$id.disable-hooks.txt"
+    fi
     # Keep only the iOS library; the other platforms would just bloat the app.
     find "$dest/lib" -mindepth 1 -maxdepth 1 -type d ! -name ios-arm64 -exec rm -rf {} +
     echo "$id $version: OK ($(du -sh "$dest" | cut -f1))"

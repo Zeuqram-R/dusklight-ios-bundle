@@ -5,9 +5,7 @@
 com.agustinfuac.majorasmask 1.0.0
 com.agustinfuac.fairy_companion 1.2.1
 com.darkzant.custom_capacities 1.1.0
-# com.dusklight.twilit_essentials 3.0.2   <- desactivado: 36 de sus hooks apuntan a funciones del
-#   motor de Dusklight (UI, controles táctiles, input) que en iOS no se pueden parchear.
-# com.emperormaxis.hero_mod 1.59.1   <- desactivado: su binario de iOS declara hooks con nombres
-#   de Windows (MSVC) que no existen en el juego de iOS (15 hooks sin resolver en el prepatch).
+com.dusklight.twilit_essentials 3.0.2   # 36 hooks desactivados en iOS: ver patches/
+com.emperormaxis.hero_mod 1.59.1   # 15 hooks desactivados en iOS: ver patches/
 com.giorgiomendieta.dof_hq 1.1.0
 dev.remiafterdark.coop_mod 1.10.1

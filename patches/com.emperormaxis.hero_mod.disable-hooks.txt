@@ -1,0 +1,15 @@
+# Hooks por nombre que se desactivan en el binario de iOS de este mod (uno por línea).
+# Motivo: usan nombres de símbolos de Windows (MSVC) que no existen en iOS; en Mac/PC tampoco resuelven y el mod los ignora.
+?dComIfGp_roomControl_getStayNo@@YAHXZ
+?dComIfGp_setDoStatusForce@@YAXEE@Z
+?dComIfGp_setNextStage@@YAXPEBDFCC@Z
+?dComIfGs_isStageMiddleBoss@@YAHXZ
+?dComIfGs_offOneZoneSwitch@@YAXHH@Z
+?dComIfGs_offSaveDunSwitch@@YAXH@Z
+?dComIfGs_onOneZoneSwitch@@YAXHH@Z
+?dComIfGs_onSaveDunSwitch@@YAXH@Z
+?dComIfGs_onStageBossEnemy@@YAXXZ
+?dComIfGs_setRestartRoom@@YAXAEBUcXyz@@FC@Z
+?fopAcM_orderPotentialEvent@@YAHPEAVfopAc_ac_c@@GGG@Z
+?get_interpolation_step@interp@dusk@@YAMXZ
+src/d/actor/d_a_e_sf.cpp#player_way_check
