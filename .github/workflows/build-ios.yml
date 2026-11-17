@@ -1,0 +1,140 @@
+name: Build iOS IPA (Dusklight + mods)
+
+# Builds Dusklight v2.0.3 for iOS with every native mod in mods.txt bundled inside
+# (prebuilt iOS binaries taken from their .dusk packages) plus TP Compass built from source.
+# The IPA is published as a release of this PRIVATE repo, to sign with Signulous.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: 'Bundle ID override (leave empty to keep dev.twilitrealm.dusk)'
+        required: false
+        default: ''
+      compass_ref:
+        description: 'TP Compass branch/tag/commit to include'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ios
+  cancel-in-progress: true
+
+env:
+  DUSKLIGHT_REF: v2.0.3
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
+jobs:
+  build-ios:
+    name: Dusklight + mods (iOS arm64)
+    runs-on: macos-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v6
+        with:
+          path: bundle
+
+      - name: Checkout TP Compass
+        uses: actions/checkout@v6
+        with:
+          repository: Zeuqram-R/tp-compass-mod
+          ref: ${{ github.event.inputs.compass_ref || 'main' }}
+          path: compass
+
+      - name: Checkout Dusklight ${{ env.DUSKLIGHT_REF }}
+        uses: actions/checkout@v6
+        with:
+          repository: TwilitRealm/dusklight
+          ref: ${{ env.DUSKLIGHT_REF }}
+          path: dusklight
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Fetch prebuilt mods
+        run: bash bundle/ci/fetch_mods.sh "$GITHUB_WORKSPACE/bundle" "$GITHUB_WORKSPACE/dusklight"
+
+      - name: Inject mods into the Dusklight tree
+        run: |
+          bash compass/ci/inject.sh "$GITHUB_WORKSPACE/compass" "$GITHUB_WORKSPACE/dusklight" "${{ github.event.inputs.bundle_id }}"
+          bash bundle/ci/inject_prebuilt.sh "$GITHUB_WORKSPACE/bundle" "$GITHUB_WORKSPACE/dusklight"
+
+      - name: Install dependencies
+        run: brew install cmake ninja
+
+      - name: Install Rust iOS target
+        run: |
+          rustup toolchain install stable
+          rustup target add aarch64-apple-ios
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.10
+
+      - name: Configure
+        working-directory: dusklight
+        run: cmake --preset x-ios-ci -DTP_COMPASS_BUNDLE=ON
+
+      - name: Build
+        working-directory: dusklight
+        run: |
+          set -o pipefail
+          if ! cmake --build --preset x-ios-ci 2>&1 | tee ../build.log; then
+            grep -E "error|Error|ndefined|prepatch|FAILED" ../build.log | tail -40 | while IFS= read -r line; do
+              echo "::error::${line}"
+            done
+            exit 1
+          fi
+
+      - name: Prepatch report
+        if: always()
+        run: |
+          for f in dusklight/build/*/prepatch-report-*.json dusklight/build/prepatch-report-*.json; do
+            [ -f "$f" ] && { echo "== $f"; cat "$f"; }
+          done || true
+
+      - name: Package IPA
+        id: package
+        run: |
+          set -euo pipefail
+          APP="dusklight/build/install/Dusklight.app"
+          test -d "$APP"
+          echo "Bundled mod libraries:"
+          ls -la "$APP/Frameworks" | grep '\.so' || true
+          ls "$APP/mods"
+          missing=0
+          while read -r id _; do
+            [[ -z "${id:-}" || "$id" == \#* ]] && continue
+            if [ ! -f "$APP/Frameworks/$id.so" ]; then echo "::error::$id was not bundled"; missing=1; fi
+          done < bundle/mods.txt
+          [ -f "$APP/Frameworks/dev.zeuqram.tp_compass.so" ] || { echo "::error::tp_compass was not bundled"; missing=1; }
+          [ "$missing" = 0 ]
+          SHORT_SHA="${GITHUB_SHA::7}"
+          NAME="Dusklight-${DUSKLIGHT_REF}-mods-${SHORT_SHA}.ipa"
+          mkdir -p out/Payload
+          cp -R "$APP" out/Payload/
+          (cd out && zip -qry "../$NAME" Payload)
+          echo "ipa=$NAME" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          ls -lh "$NAME"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-build-${{ github.run_number }}
+          name: "Dusklight + mods — build ${{ github.run_number }} (${{ steps.package.outputs.short_sha }})"
+          prerelease: true
+          files: ${{ steps.package.outputs.ipa }}
+          body: |
+            Dusklight ${{ env.DUSKLIGHT_REF }} para iOS con estos mods incluidos: ver `mods.txt` + TP Compass.
+
+            Instalación: descargá el `.ipa` en el iPad (con tu sesión de GitHub abierta en Safari),
+            firmalo e instalalo con Signulous. Después activá cada mod en el menú Mods.

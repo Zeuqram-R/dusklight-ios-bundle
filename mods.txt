@@ -1,0 +1,11 @@
+# Mods nativos que se incluyen en el IPA de iOS.
+# Formato: <id> <versión>   (se descargan de https://twilitrealm.dev/download/dusklight/<id>/<versión>)
+# Si ponés un archivo mods/<id>.dusk en este repo, se usa ese en vez de descargarlo.
+# Los mods de solo texturas/assets NO van aquí: esos se instalan directo en el iPad.
+com.agustinfuac.majorasmask 1.0.0
+com.agustinfuac.fairy_companion 1.2.1
+com.darkzant.custom_capacities 1.1.0
+com.dusklight.twilit_essentials 3.0.2
+com.emperormaxis.hero_mod 1.59.1
+com.giorgiomendieta.dof_hq 1.1.0
+dev.remiafterdark.coop_mod 1.10.1
