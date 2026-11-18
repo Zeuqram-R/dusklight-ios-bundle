@@ -9,3 +9,4 @@ com.dusklight.twilit_essentials 3.0.2   # 36 hooks desactivados en iOS: ver patc
 com.emperormaxis.hero_mod 1.59.1   # 15 hooks desactivados en iOS: ver patches/
 com.giorgiomendieta.dof_hq 1.1.0
 dev.remiafterdark.coop_mod 1.10.1
+com.blueflaregames.zora_swim 1.3.0
