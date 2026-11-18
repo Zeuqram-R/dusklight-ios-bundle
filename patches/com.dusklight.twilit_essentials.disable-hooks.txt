@@ -1,28 +1,28 @@
-# Hooks por nombre que se desactivan en el binario de iOS de este mod (uno por línea).
-# Motivo: apuntan a funciones del motor de Dusklight (UI, controles táctiles, input) que en iOS no se pueden parchear.
-_ZN3Rml7Element8SetClassERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEEb
-_ZN4dusk12menu_pointer8hit_paneEP8CPaneMgrf
-_ZN4dusk2ui13TouchControls15handle_touch_upERN3Rml5EventE
-_ZN4dusk2ui13TouchControls17handle_touch_downERN3Rml5EventE
-_ZN4dusk2ui13TouchControls19handle_touch_cancelERN3Rml5EventE
-_ZN4dusk2ui13TouchControls21sync_control_displaysEv
-_ZN4dusk2ui17midna_icon_sourceEv
-_ZN4dusk2ui19TouchControlsEditor11save_layoutEv
-_ZN4dusk2ui19TouchControlsEditor20reset_working_layoutEv
-_ZN4dusk2ui19TouchControlsEditor20sync_control_layoutsEv
-_ZN4dusk2ui19TouchControlsEditorD1Ev
-_ZN4dusk2ui19midna_icon_revisionEv
-_ZN4dusk2ui26apply_control_dock_classesEPN3Rml7ElementENS0_13ControlAnchorE
-canAutoSave
-dusk::AchievementSystem::signal
-dusk::AchievementSystem::tick
-dusk::getActionBindHold
-dusk::getActionBindHoldAnyPort
-dusk::getActionBindTrig
-dusk::gyro::getAimDeltas
-dusk::interp::begin_presentation
-dusk::mouse::get_aim_deltas
-dusk::mouse::get_camera_deltas
-dusk::runCommand
-dusk::ui::handle_event
-dusk::ui::input::handle_event
+# Ya no hace falta desactivar nada: ci/engine_patchable.cmake hace parcheables las funciones
+# del motor en iOS. Se conserva la lista (comentada) por si una versión futura lo necesita.
+# _ZN3Rml7Element8SetClassERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEEb
+# _ZN4dusk12menu_pointer8hit_paneEP8CPaneMgrf
+# _ZN4dusk2ui13TouchControls15handle_touch_upERN3Rml5EventE
+# _ZN4dusk2ui13TouchControls17handle_touch_downERN3Rml5EventE
+# _ZN4dusk2ui13TouchControls19handle_touch_cancelERN3Rml5EventE
+# _ZN4dusk2ui13TouchControls21sync_control_displaysEv
+# _ZN4dusk2ui17midna_icon_sourceEv
+# _ZN4dusk2ui19TouchControlsEditor11save_layoutEv
+# _ZN4dusk2ui19TouchControlsEditor20reset_working_layoutEv
+# _ZN4dusk2ui19TouchControlsEditor20sync_control_layoutsEv
+# _ZN4dusk2ui19TouchControlsEditorD1Ev
+# _ZN4dusk2ui19midna_icon_revisionEv
+# _ZN4dusk2ui26apply_control_dock_classesEPN3Rml7ElementENS0_13ControlAnchorE
+# canAutoSave
+# dusk::AchievementSystem::signal
+# dusk::AchievementSystem::tick
+# dusk::getActionBindHold
+# dusk::getActionBindHoldAnyPort
+# dusk::getActionBindTrig
+# dusk::gyro::getAimDeltas
+# dusk::interp::begin_presentation
+# dusk::mouse::get_aim_deltas
+# dusk::mouse::get_camera_deltas
+# dusk::runCommand
+# dusk::ui::handle_event
+# dusk::ui::input::handle_event
